@@ -3,18 +3,20 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
+  Param, ParseBoolPipe,
   Post,
-  Put,
-} from '@nestjs/common';
+  Put, Query
+} from "@nestjs/common";
 import { IProduct, ProductService } from './product.service';
+import { Todo } from "../todo.schemas";
+import { QueryTodoDto } from "../query-todo.dto";
 
 @Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Get()
-  findAllProducts() {
+  findAllProducts(@Query() query: QueryTodoDto) {
     return this.productService.getProducts();
   }
 
@@ -24,7 +26,7 @@ export class ProductController {
   }
 
   @Post()
-  createProduct(@Body() product: IProduct) {
+  createProduct(@Body() product: IProduct) : Promise<Todo> {
     return this.productService.createProduct(product);
   }
 
