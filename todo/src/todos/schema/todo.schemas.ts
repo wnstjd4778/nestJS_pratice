@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Todo {
-  @Prop({ type: String, index: true })
+  @Prop({ type: String, index: true, required: true })
   title: string;
 
   @Prop({ type: String, required: true })

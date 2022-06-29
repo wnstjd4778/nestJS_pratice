@@ -1,13 +1,15 @@
 import {
   IsBoolean,
-  IsBooleanString,
+  IsBooleanString, IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class QueryTodoDto {
-  @IsString()
   @IsOptional()
+  @IsObject()
+  @Transform((value) => RegExp(value.value)) // regexp하면 object 타입으로 변환
   title?: string;
 
   @IsBooleanString()

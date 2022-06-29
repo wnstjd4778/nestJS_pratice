@@ -1,21 +1,19 @@
 import { Module } from '@nestjs/common';
-import { ProductModule } from './product/product.module';
-import { MoviesModule } from './movies/movies.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { doc } from 'prettier';
 import { join } from 'path';
+import { TodosModule } from './todos/todos.module';
+import { UsersModule } from './users/users.module';
+import { JwtService } from './jwt/jwt.service';
 
 @Module({
   imports: [
-    ProductModule,
-    MoviesModule,
     ConfigModule.forRoot({
       envFilePath: [
         join(
           __dirname,
           '../config',
-          `.${process.env.NODE_ENV || 'development'}.env `,
+          `.${process.env.NODE_ENV || 'development'}.env`,
         ),
       ],
     }),
@@ -26,6 +24,8 @@ import { join } from 'path';
       }),
       inject: [ConfigService],
     }),
+    TodosModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],
