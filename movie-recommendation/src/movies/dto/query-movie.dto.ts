@@ -5,13 +5,20 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { IAccessTokenPayload } from '../../types/auth-tokens';
+import { Transform } from 'class-transformer';
 
 export class QueryMovieDto {
-  @IsOptional()
   @IsNotEmpty()
+  @IsOptional()
+  @Transform((value) => RegExp(value.value))
   title: string;
 
-  @IsOptional()
   @IsNotEmpty()
+  @IsOptional()
+  @Transform((value) => RegExp(value.value))
   content: string;
+
+  @IsOptional()
+  user: IAccessTokenPayload;
 }

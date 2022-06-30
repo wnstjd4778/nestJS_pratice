@@ -1,70 +1,93 @@
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
+import { v4 as uuidV4 } from 'uuid';
+import authConfig from '../config/auth.config';
+import { ConfigType } from '@nestjs/config';
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+  IAccessTokenPayload,
+  IAuthToken,
+  IRefreshTokenPayload,
+} from '../types/auth-tokens';
 import { InjectModel } from '@nestjs/mongoose';
-import { Auth, AuthDocument } from '../schema/auth.schema';
+import { Auth, AuthDocument } from './schema/auth.schema';
 import { Model } from 'mongoose';
-import { LogInDto } from './dto/log-in.dto';
-import * as bcrypt from 'bcrypt';
-import { RegisterDto } from './dto/register.dto';
+import {
+  RefreshToken,
+  RefreshTokenDocument,
+} from './schema/refresh-token.schema';
+import { compareSync, hashSync } from 'bcrypt';
+import { IUser } from '../types/user';
+import { IAuth } from '../types/auth';
+import { verify } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(Auth.name) private authModel: Model<AuthDocument>) {}
+  constructor(
+    @InjectModel(Auth.name) private authModel: Model<AuthDocument>,
+    @InjectModel(RefreshToken.name)
+    private refreshTokenModel: Model<RefreshTokenDocument>,
+    @Inject(authConfig.KEY) private config: ConfigType<typeof authConfig>,
+  ) {}
 
-  async checkEmailAndPassword(dto: LogInDto): Promise<AuthDocument> {
-    const auth = await this.authModel.findOne({ email: dto.email }).exec();
-    if (!auth) {
-      throw new NotFoundException('아이디 또는 비밀번호가 다릅니다.');
-    }
-    if (await this.checkHashPassword(dto.password, auth.password)) {
-      return auth;
-    } else {
-      throw new BadRequestException('아이디 또는 비밀번호가 다릅니다.');
-    }
+  signAccessToken(payload: IAccessTokenPayload): string {
+    return jwt.sign(payload, this.config.jwt_secret, {
+      expiresIn: '1d',
+      audience: 'movie.com',
+      issuer: 'movie.com',
+    });
   }
 
-  async register(dto: RegisterDto): Promise<AuthDocument> {
-    if (
-      (await this.checkDuplicateEmail(dto.email)) ||
-      (await this.checkDuplicateName(dto.name))
-    ) {
-      throw new BadRequestException('이메일 또는 이름이 중복됩니다.');
-    } else {
-      dto.password = await this.getHashedPassword(dto.password);
-      return await this.authModel.create(dto);
-    }
+  async signRefreshToken(userId: string): Promise<string> {
+    const token = uuidV4();
+    await this.refreshTokenModel.create({
+      value: token,
+      user: userId,
+    });
+    return token;
   }
 
-  async getHashedPassword(plainText: string): Promise<string> {
-    const saltOrRounds = 10;
-    return await bcrypt.hash(plainText, saltOrRounds);
+  async authenticate(authId: string, password: string): Promise<boolean> {
+    const exAuth = await this.authModel.findById(authId);
+    return compareSync(password, exAuth.password);
   }
 
-  async checkHashPassword(
-    password: string,
-    hashPassword: string,
-  ): Promise<boolean> {
-    return await bcrypt.compare(password, hashPassword);
+  async createAuthentication(user: IUser, password: string): Promise<IAuth> {
+    return this.authModel.create({
+      providerId: String(user._id),
+      user: user._id,
+      password: hashSync(password, 12),
+    });
   }
 
-  async checkDuplicateEmail(email: string): Promise<boolean> {
-    const auth: AuthDocument = await this.authModel.findOne({ email: email });
-    if (auth) {
-      return true;
-    } else {
-      return false;
-    }
+  async getUserIdByRefreshToken(refreshToken: string): Promise<string> {
+    const document = await this.refreshTokenModel.findOne({
+      value: refreshToken,
+    });
+    return document.user;
   }
 
-  async checkDuplicateName(name: string): Promise<boolean> {
-    const auth: AuthDocument = await this.authModel.findOne({ name: name });
-    if (auth) {
-      return true;
-    } else {
-      return false;
+  async refreshToken(
+    refreshToken: string,
+    payload: IAccessTokenPayload,
+  ): Promise<IAuthToken> {
+    const document = await this.refreshTokenModel.findOne({
+      value: refreshToken,
+    });
+    const aToken = this.signAccessToken(payload);
+    const rToken = await this.signRefreshToken(payload._id);
+    await document.deleteOne();
+    return {
+      accessToken: aToken,
+      refreshToken: rToken,
+    };
+  }
+
+  verifyToken(token: string) {
+    try {
+      const { _id, role } = verify(token, this.config.jwt_secret) as IUser;
+      return { _id, role };
+    } catch (e) {
+      throw new UnauthorizedException();
     }
   }
 }

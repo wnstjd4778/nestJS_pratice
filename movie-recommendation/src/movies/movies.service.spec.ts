@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesService } from './movies.service';
-import { MovieDocument } from '../schema/movie.schema';
+import { MovieDocument } from './schema/movie.schema';
 
 describe('MoviesService', () => {
   let service: MoviesService;

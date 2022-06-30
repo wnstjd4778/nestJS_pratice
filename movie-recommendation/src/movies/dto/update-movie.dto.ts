@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import {IAccessTokenPayload} from "../../types/auth-tokens";
 
 export class UpdateMovieDto {
   @IsOptional()
@@ -12,4 +13,7 @@ export class UpdateMovieDto {
   @IsOptional()
   @IsNumber()
   score: number;
+
+  @IsOptional()
+  user: IAccessTokenPayload;
 }

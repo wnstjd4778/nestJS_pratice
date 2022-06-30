@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Movie {
@@ -14,7 +14,10 @@ export class Movie {
 
   @Prop([String])
   genre: string[];
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
+  user: string;
 }
 
-export type MovieDocument = Movie & Document;
+export type MovieDocument = Movie & mongoose.Document;
 export const MovieSchema = SchemaFactory.createForClass(Movie);

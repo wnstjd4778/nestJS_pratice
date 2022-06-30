@@ -3,12 +3,24 @@ import { MoviesModule } from './movies/movies.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import authConfig from './config/auth.config';
+import { validationSchema } from './config/validation-schema';
 @Module({
   imports: [
     MoviesModule,
     ConfigModule.forRoot({
-      envFilePath: [join(__dirname, '../config/.env')],
+      envFilePath: [
+        join(
+          __dirname,
+          '../config',
+          `.env`,
+        ),
+      ],
+      load: [authConfig],
+      validationSchema,
+      isGlobal: true,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -17,6 +29,7 @@ import { AuthModule } from './auth/auth.module';
       }),
       inject: [ConfigService],
     }),
+    UsersModule,
     AuthModule,
   ],
   controllers: [],
