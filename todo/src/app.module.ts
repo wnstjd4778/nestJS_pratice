@@ -1,23 +1,27 @@
 import { Module } from '@nestjs/common';
-import { ProductModule } from './product/product.module';
-import { MoviesModule } from './movies/movies.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { doc } from 'prettier';
 import { join } from 'path';
+import { TodosModule } from './todos/todos.module';
+import { UsersModule } from './users/users.module';
+import { AuthService } from './auth/auth.service';
+import { AuthModule } from './auth/auth.module';
+import { validationSchema } from './config/validation-schema';
+import authConfig from './config/auth.config';
 
 @Module({
   imports: [
-    ProductModule,
-    MoviesModule,
     ConfigModule.forRoot({
       envFilePath: [
         join(
           __dirname,
           '../config',
-          `.${process.env.NODE_ENV || 'development'}.env `,
+          `.${process.env.NODE_ENV || 'development'}.env`,
         ),
       ],
+      load: [authConfig],
+      validationSchema,
+      isGlobal: true,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -26,6 +30,9 @@ import { join } from 'path';
       }),
       inject: [ConfigService],
     }),
+    TodosModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
