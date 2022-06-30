@@ -1,13 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { User } from './user.schema';
+import { User } from '../../users/schema/user.schema';
+import mongoose from 'mongoose';
+import {IAUth} from "../../../types/auth";
 
 export const AUTH_PROVIDERS = ['kakao', 'naver', 'local'] as const;
-import mongoose from 'mongoose';
 export type TAuthProvider = typeof AUTH_PROVIDERS[number];
 
 @Schema()
-export class Auth {
+export class Auth implements IAUth {
   @Prop({ type: String, enum: AUTH_PROVIDERS, default: 'local' })
   provider: TAuthProvider;
 

@@ -5,6 +5,8 @@ import { join } from 'path';
 import { TodosModule } from './todos/todos.module';
 import { UsersModule } from './users/users.module';
 import { JwtService } from './jwt/jwt.service';
+import { AuthService } from './auth/auth.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -26,8 +28,9 @@ import { JwtService } from './jwt/jwt.service';
     }),
     TodosModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [AuthService],
 })
 export class AppModule {}

@@ -3,14 +3,7 @@ import { TUserRole } from '../users/schema/user.schema';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 
-export interface AccessTokenPayload {
-  _id: string;
-  role: TUserRole;
-}
 
-export interface RefreshTokenPayload {
-  _id: string;
-}
 
 @Injectable()
 export class JwtService {
