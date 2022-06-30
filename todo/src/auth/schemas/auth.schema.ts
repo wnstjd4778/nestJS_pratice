@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { User } from '../../users/schema/user.schema';
 import mongoose from 'mongoose';
-import {IAUth} from "../../../types/auth";
+import { IAUth } from '../../types/auth';
 
 export const AUTH_PROVIDERS = ['kakao', 'naver', 'local'] as const;
 export type TAuthProvider = typeof AUTH_PROVIDERS[number];

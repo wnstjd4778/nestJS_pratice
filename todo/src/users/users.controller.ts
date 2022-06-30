@@ -1,8 +1,8 @@
-import {Body, Controller, Headers, Post} from '@nestjs/common';
+import { Body, Controller, Headers, Post } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UsersService } from './users.service';
 import { JoinUserDto } from './dto/join-user.dto';
-import { IAuthTokens } from '../../types/auth-tokens';
+import { IAuthTokens } from '../types/auth-tokens';
 
 @Controller('users')
 export class UsersController {

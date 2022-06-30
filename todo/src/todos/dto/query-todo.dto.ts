@@ -15,4 +15,7 @@ export class QueryTodoDto {
   @IsBooleanString()
   @IsOptional()
   done?: boolean;
+
+  @IsOptional()
+  user?: string;
 }

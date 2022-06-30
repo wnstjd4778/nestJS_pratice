@@ -1,4 +1,4 @@
-import { TAuthProvider } from '../src/auth/schemas/auth.schema';
+import { TAuthProvider } from '../auth/schemas/auth.schema';
 
 export interface IAUth {
   _id?: string;

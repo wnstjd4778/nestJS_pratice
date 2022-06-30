@@ -11,7 +11,10 @@ export class TodosService {
   constructor(@InjectModel(Todo.name) private todoModel: Model<TodoDocument>) {}
 
   findAll(query: QueryTodoDto): Promise<TodoDocument[]> {
-    return this.todoModel.find(query).exec();
+    return this.todoModel
+      .find(query)
+      .populate({ path: 'user', select: 'name' })
+      .exec();
   }
 
   findOne(id: string): Promise<TodoDocument> {
@@ -39,5 +42,4 @@ export class TodosService {
     await todo.deleteOne();
     return todo;
   }
-
 }

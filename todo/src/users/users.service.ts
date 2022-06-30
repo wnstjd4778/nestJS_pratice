@@ -6,18 +6,11 @@ import {
 } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Auth, AuthDocument } from '../auth/schemas/auth.schema';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schema/user.schema';
 import { JoinUserDto } from './dto/join-user.dto';
-import { hashSync, compareSync } from 'bcrypt';
-import { IAuthTokens } from '../../types/auth-tokens';
-import { JwtService } from '../jwt/jwt.service';
-import {
-  RefreshToken,
-  RefreshTokenDocument,
-} from '../auth/schemas/refresh-token.schema';
-import { AccessTokenPayload, AuthService } from '../auth/auth.service';
+import { IAuthTokens } from '../types/auth-tokens';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UsersService {
@@ -41,7 +34,7 @@ export class UsersService {
       _id,
       role,
     });
-    const refreshToken = await this.authService.signRefreshToken({ _id });
+    const refreshToken = await this.authService.signRefreshToken(_id);
 
     return {
       accessToken,
@@ -56,7 +49,7 @@ export class UsersService {
       throw new BadRequestException('이미 등록된 이메일입니다.');
     }
     const user = await this.userModel.create({ email, name, phone });
-    const auth = this.authService.createAuthentication(user, password);
+    const auth = await this.authService.createAuthentication(user, password);
     user.auth = auth._id;
     await user.save();
 
@@ -64,15 +57,11 @@ export class UsersService {
   }
 
   async refreshToken(refreshToken: string): Promise<IAuthTokens> {
-    return this.authService.refreshToken(refreshToken);
-  }
-
-  async refreshToken(
-    refreshToken: string,
-    payload: AccessTokenPayload,
-  ): Promise<IAuthTokens> {
     const userId = await this.authService.getUserIdByRefreshToken(refreshToken);
     const user = await this.userModel.findById(userId);
-    const payload = { _id: user._id, value: refreshToken };
+    const payload = { _id: user._id, role: user.role };
+
+    return this.authService.refreshToken(refreshToken, payload);
   }
+
 }

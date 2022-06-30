@@ -10,4 +10,6 @@ export class CreateTodoDto {
   @IsOptional()
   @IsBoolean()
   done: boolean;
+
+  user:string;
 }

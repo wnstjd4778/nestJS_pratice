@@ -1,4 +1,4 @@
-import { TUserRole } from '../src/users/schema/user.schema';
+import { TUserRole } from '../users/schema/user.schema';
 
 export interface IUser {
   _id?: string;

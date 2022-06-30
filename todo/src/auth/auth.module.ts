@@ -7,6 +7,7 @@ import {
   RefreshTokenSchema,
 } from './schemas/refresh-token.schema';
 import { Auth, AuthSchema } from './schemas/auth.schema';
+import { AuthGuard } from './guards/auth.guard';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { Auth, AuthSchema } from './schemas/auth.schema';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, AuthGuard],
+  exports: [AuthService, AuthGuard],
 })
 export class AuthModule {}

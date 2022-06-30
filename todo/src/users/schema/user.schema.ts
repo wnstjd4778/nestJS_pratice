@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';
-import { IUser } from '../../../types/user';
+import { IUser } from '../../types/user';
 
 export const USER_ROLES = ['member', 'admin'] as const;
 export type TUserRole = typeof USER_ROLES[number];
