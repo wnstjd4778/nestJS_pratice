@@ -89,7 +89,12 @@ export class AuthService {
       ) as IUserProfile;
       return { _id, role };
     } catch (e) {
-      throw new UnauthorizedException();
+      console.log(e);
+      let message = '유효하지 않은 엑세스토큰입니다.';
+      if (e.name === 'TokenExpiredError') {
+        message = '엑세스 토큰이 만료되었습니다.';
+      }
+      throw new UnauthorizedException(message);
     }
   }
 }

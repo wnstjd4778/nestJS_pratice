@@ -19,6 +19,7 @@ import { Request } from 'express';
 import { User } from '../decoreaters/user.decorater';
 import { IUserProfile } from '../types/auth-tokens';
 import { Todo } from './schema/todo.schemas';
+import { Roles } from '../decorator/roles.decorator';
 
 @Controller('todos')
 export class TodosController {
@@ -34,6 +35,8 @@ export class TodosController {
     return this.todosService.findAll(query);
   }
   @Get()
+  @UseGuards(AuthGuard)
+  @Roles('admin')
   findAll(@Query() query: QueryTodoDto) {
     return this.todosService.findAll(query);
   }

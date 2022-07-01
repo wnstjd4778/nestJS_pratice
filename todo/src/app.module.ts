@@ -1,13 +1,26 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import {
+  Inject,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
+import {
+  InjectConnection,
+  InjectModel,
+  MongooseModule,
+} from '@nestjs/mongoose';
+import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import { join } from 'path';
 import { TodosModule } from './todos/todos.module';
 import { UsersModule } from './users/users.module';
-import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { validationSchema } from './config/validation-schema';
 import authConfig from './config/auth.config';
+import { AuthMiddleware } from './middlewares/auth.middleware';
+import { Connection } from 'mongoose';
+import adminConfig from './config/admin.config';
+import { hashSync } from 'bcrypt';
 
 @Module({
   imports: [
@@ -19,7 +32,7 @@ import authConfig from './config/auth.config';
           `.${process.env.NODE_ENV || 'development'}.env`,
         ),
       ],
-      load: [authConfig],
+      load: [authConfig, adminConfig],
       validationSchema,
       isGlobal: true,
     }),
@@ -37,4 +50,32 @@ import authConfig from './config/auth.config';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule, OnApplicationBootstrap {
+  constructor(
+    @InjectConnection() private connection: Connection,
+    @Inject(adminConfig.KEY) private config: ConfigType<typeof adminConfig>,
+  ) {}
+  configure(consumer: MiddlewareConsumer): any {
+    consumer.apply(AuthMiddleware).forRoutes('/**');
+  }
+
+  onApplicationBootstrap(): any {
+    this.createAdmin();
+  }
+  private async createAdmin(): Promise<void> {
+    const { Auth, User } = this.connection.models;
+    const { email, name, phone, password } = this.config;
+    const exAdmin = await User.findOne({ email });
+    if (!exAdmin) {
+      const user = await User.create({ email, name, phone, password });
+      const auth = await Auth.create({
+        provider: 'local',
+        providerId: String(user._id),
+        password: hashSync(password, 12),
+        user: user._id,
+      });
+      user.auth = auth._id;
+      await user.save();
+    }
+  }
+}

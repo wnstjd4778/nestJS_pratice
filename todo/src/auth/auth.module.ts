@@ -8,6 +8,8 @@ import {
 } from './schemas/refresh-token.schema';
 import { Auth, AuthSchema } from './schemas/auth.schema';
 import { AuthGuard } from './guards/auth.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { RoleGuard } from './guards/role.guard';
 
 @Module({
   imports: [
@@ -17,7 +19,14 @@ import { AuthGuard } from './guards/auth.guard';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard],
+  providers: [
+    AuthService,
+    AuthGuard,
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },
+  ],
   exports: [AuthService, AuthGuard],
 })
 export class AuthModule {}

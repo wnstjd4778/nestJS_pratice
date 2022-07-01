@@ -18,11 +18,11 @@ export class AuthGuard implements CanActivate {
   }
 
   private validate(request: any): boolean {
-    if (!request.headers.authorization) {
+    if (!request.user) {
       throw new UnauthorizedException('로그인이 필요합니다.');
     }
     const token = request.headers.authorization.replace(/^Bearer /, '');
-    request.user = this.authService.verifyToken(token);
+    this.authService.verifyToken(token);
     return true;
   }
 }
