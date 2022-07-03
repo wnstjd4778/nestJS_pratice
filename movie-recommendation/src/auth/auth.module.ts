@@ -6,6 +6,9 @@ import {
   RefreshToken,
   RefreshTokenSchema,
 } from './schema/refresh-token.schema';
+import { AuthGuard } from './guard/auth.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { RoleGuard } from './guard/role.guard';
 
 @Module({
   imports: [
@@ -14,7 +17,14 @@ import {
       { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
   ],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    AuthGuard,
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

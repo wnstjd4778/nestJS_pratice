@@ -3,11 +3,7 @@ import * as jwt from 'jsonwebtoken';
 import { v4 as uuidV4 } from 'uuid';
 import authConfig from '../config/auth.config';
 import { ConfigType } from '@nestjs/config';
-import {
-  IAccessTokenPayload,
-  IAuthToken,
-  IRefreshTokenPayload,
-} from '../types/auth-tokens';
+import { IAccessTokenPayload, IAuthToken } from '../types/auth-tokens';
 import { InjectModel } from '@nestjs/mongoose';
 import { Auth, AuthDocument } from './schema/auth.schema';
 import { Model } from 'mongoose';
