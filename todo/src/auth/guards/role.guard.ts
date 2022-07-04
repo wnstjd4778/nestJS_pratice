@@ -27,9 +27,11 @@ export class RoleGuard implements CanActivate {
     if (!user) {
       throw new ForbiddenException('권한이 없는 요청입니다.');
     }
+
     if (!roles.includes(user.role)) {
       throw new ForbiddenException('권한이 없는 요청입니다.');
     }
+
     return true;
   }
 }

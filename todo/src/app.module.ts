@@ -21,6 +21,10 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
 import { Connection } from 'mongoose';
 import adminConfig from './config/admin.config';
 import { hashSync } from 'bcrypt';
+import { utilities as nestWinstonUtilities, WinstonModule } from 'nest-winston';
+import { LoggingModule } from './logging/logging.module';
+import { LoggingTestModule } from './logging-test/logging-test.module';
+import * as winston from 'winston';
 
 @Module({
   imports: [
@@ -46,6 +50,8 @@ import { hashSync } from 'bcrypt';
     TodosModule,
     UsersModule,
     AuthModule,
+    LoggingTestModule,
+    LoggingModule,
   ],
   controllers: [],
   providers: [],

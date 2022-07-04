@@ -3,6 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
+  Logger,
+  LoggerService,
   Param,
   Post,
   Put,
@@ -10,6 +13,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+//import { Logger as WinstonLogger} from 'winston';
 import { QueryTodoDto } from './dto/query-todo.dto';
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -20,10 +24,14 @@ import { User } from '../decoreaters/user.decorater';
 import { IUserProfile } from '../types/auth-tokens';
 import { Todo } from './schema/todo.schemas';
 import { Roles } from '../decorator/roles.decorator';
+import { WINSTON_MODULE_PROVIDER, WinstonLogger } from 'nest-winston';
 
 @Controller('todos')
 export class TodosController {
-  constructor(private readonly todosService: TodosService) {}
+  constructor(
+    private readonly todosService: TodosService,
+    private readonly logger: Logger,
+  ) {}
 
   @Get('me')
   @UseGuards(AuthGuard)

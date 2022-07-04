@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {Logger, Module} from '@nestjs/common';
 import { TodosController } from './todos.controller';
 import { TodosService } from './todos.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -11,6 +11,6 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule,
   ],
   controllers: [TodosController],
-  providers: [TodosService],
+  providers: [TodosService, Logger],
 })
 export class TodosModule {}

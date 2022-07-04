@@ -5,7 +5,6 @@ import { AuthService } from '../auth/auth.service';
 export class AuthMiddleware implements NestMiddleware {
   constructor(private authService: AuthService) {}
   use(req: any, res: any, next: () => void) {
-    console.log('call auth middleware');
     if (req.headers.authorization) {
       try {
         const token = req.headers.authorization.replace(/^Bearer /, '');
