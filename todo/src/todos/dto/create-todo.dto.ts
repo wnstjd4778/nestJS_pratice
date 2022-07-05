@@ -1,4 +1,11 @@
-import {IsBoolean, IsEmpty, IsNotEmpty, IsOptional} from "class-validator";
+import {
+  IsArray,
+  IsBoolean,
+  IsEmpty,
+  IsNotEmpty,
+  IsOptional, IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class CreateTodoDto {
   @IsNotEmpty()
@@ -11,5 +18,9 @@ export class CreateTodoDto {
   @IsBoolean()
   done: boolean;
 
-  user:string;
+  user?: string;
+
+  @IsString({ each: true })
+  @IsOptional()
+  attachments: [string];
 }

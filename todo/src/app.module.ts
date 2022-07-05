@@ -24,7 +24,9 @@ import { hashSync } from 'bcrypt';
 import { utilities as nestWinstonUtilities, WinstonModule } from 'nest-winston';
 import { LoggingModule } from './logging/logging.module';
 import { LoggingTestModule } from './logging-test/logging-test.module';
+import { UploadModule } from './upload/upload.module';
 import * as winston from 'winston';
+import multerConfig from './config/multer.config';
 
 @Module({
   imports: [
@@ -36,7 +38,7 @@ import * as winston from 'winston';
           `.${process.env.NODE_ENV || 'development'}.env`,
         ),
       ],
-      load: [authConfig, adminConfig],
+      load: [authConfig, adminConfig, multerConfig],
       validationSchema,
       isGlobal: true,
     }),
@@ -52,6 +54,7 @@ import * as winston from 'winston';
     AuthModule,
     LoggingTestModule,
     LoggingModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [],
