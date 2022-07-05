@@ -17,6 +17,7 @@ import { SurveyQuestionsService } from './survey-questions/survey-questions.serv
 import { SurveyQuestionsController } from './survey-questions/survey-questions.controller';
 import { AuthService } from '../auth/auth.service';
 import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: SurveyQuestion.name, schema: SurveyQuestionSchema },
     ]),
     AuthModule,
+    UsersModule,
   ],
   controllers: [
     SurveyFormsController,

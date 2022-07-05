@@ -15,6 +15,8 @@ import {
 } from '../schemas/survey-question.schema';
 import { IAccessTokenPayload } from '../../types/auth-tokens';
 import { CreateSurveyFormDto } from './dto/create-survey-form.dto';
+import { User, UserDocument } from '../../users/schema/user.schema';
+import { UsersService } from '../../users/users.service';
 
 @Injectable()
 export class SurveyFormsService {
@@ -23,6 +25,7 @@ export class SurveyFormsService {
     private surveyFormModel: Model<SurveyFormDocument>,
     @InjectModel(SurveyQuestion.name)
     private surveyQuestionModel: Model<SurveyQuestionDocument>,
+    private usersService: UsersService,
   ) {}
   async findAllSurveyForms(
     query: QuerySurveyFormDto,
@@ -45,6 +48,7 @@ export class SurveyFormsService {
     dto: CreateSurveyFormDto,
   ): Promise<SurveyFormDocument> {
     const { title, content, writer, cost, maxResult } = dto;
+
     return this.surveyFormModel.create({
       writer,
       content,
@@ -90,8 +94,19 @@ export class SurveyFormsService {
     if (String(surveyForm.writer) !== user._id) {
       throw new UnauthorizedException('해당 설문조사에 접근할 수 없습니다.');
     }
+    const exChangePoint =
+      (surveyForm.maxResult - surveyForm.participants.length) * surveyForm.cost;
+    await this.usersService.exchangePointByDeleteSurvey(
+      exChangePoint,
+      user._id,
+    );
     await this.surveyQuestionModel.deleteMany({ surveyForm: id });
     surveyForm.deleteOne();
     return surveyForm;
+  }
+
+  async checkEnoughPoint(dto: CreateSurveyFormDto): Promise<void> {
+    const costSum = dto.cost * dto.maxResult;
+    await this.usersService.checkPointAndPay(costSum, dto.writer);
   }
 }

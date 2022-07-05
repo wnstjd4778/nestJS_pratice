@@ -83,7 +83,7 @@ export class AuthService {
       const { _id, role } = verify(token, this.config.jwt_secret) as IUser;
       return { _id, role };
     } catch (e) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('토큰이 유효하지 않습니다.');
     }
   }
 }

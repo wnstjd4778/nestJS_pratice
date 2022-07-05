@@ -61,4 +61,35 @@ export class UsersService {
     const payload = { _id: user._id, role: user.role };
     return this.authService.refreshToken(refreshToken, payload);
   }
+
+  async checkPointAndPay(paymentPoint: number, userId: string): Promise<void> {
+    const user = await this.userModel.findById(userId);
+    if (user.point >= paymentPoint) {
+      user.point -= paymentPoint;
+      await user.save();
+      return;
+    } else {
+      throw new BadRequestException('결제 금액이 부족합니다.');
+    }
+  }
+
+  async exchangePointByDeleteSurvey(
+    paymentPoint: number,
+    userId: string,
+  ): Promise<void> {
+    const user = await this.userModel.findById(userId);
+    user.point += paymentPoint;
+    await user.save();
+    return;
+  }
+
+  async increasePointBySurvey(
+    surveyPoint: number,
+    userId: string,
+  ): Promise<void> {
+    const user = await this.userModel.findById(userId);
+    user.point += surveyPoint;
+    await user.save();
+    return;
+  }
 }

@@ -19,6 +19,9 @@ export class User implements IUser {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Auth', default: null })
   auth: string;
+
+  @Prop({ type: Number, default: 0 })
+  point: number;
 }
 
 export type UserDocument = User & mongoose.Document;

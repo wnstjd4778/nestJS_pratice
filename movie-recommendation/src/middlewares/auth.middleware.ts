@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  NestMiddleware,
-} from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable()
@@ -16,7 +13,6 @@ export class AuthMiddleware implements NestMiddleware {
         delete req.user;
       }
     }
-    console.log('auth middleware 통과');
     next();
   }
 }
