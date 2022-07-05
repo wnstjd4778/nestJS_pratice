@@ -18,6 +18,9 @@ import { AuthService } from './auth/auth.service';
 import { Connection } from 'mongoose';
 import { hashSync } from 'bcrypt';
 import { SurveysModule } from './surveys/surveys.module';
+import { LoggingModule } from './logging/logging.module';
+import { CommentsModule } from './comments/comments.module';
+import {PageMiddleware} from "./middlewares/page.middleware";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,6 +39,8 @@ import { SurveysModule } from './surveys/surveys.module';
     UsersModule,
     AuthModule,
     SurveysModule,
+    LoggingModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [],
@@ -48,6 +53,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap {
   ) {}
   configure(consumer: MiddlewareConsumer): any {
     consumer.apply(AuthMiddleware).forRoutes('/**');
+    consumer.apply(PageMiddleware).forRoutes('/**');
   }
 
   onApplicationBootstrap(): any {
@@ -67,6 +73,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap {
         password: hashSync(password, 12),
       });
       user.auth = auth._id;
+      user.point = 1000000;
       await user.save();
     }
   }

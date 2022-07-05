@@ -11,6 +11,7 @@ import {
 } from '../schemas/survey-result.schema';
 import { Model } from 'mongoose';
 import { SurveyForm, SurveyFormDocument } from '../schemas/survey-form.schema';
+import { UsersService } from '../../users/users.service';
 
 @Injectable()
 export class SurveyResultsService {
@@ -19,6 +20,7 @@ export class SurveyResultsService {
     private surveyResultModel: Model<SurveyResultDocument>,
     @InjectModel(SurveyForm.name)
     private surveyFormModel: Model<SurveyFormDocument>,
+    private readonly usersService: UsersService,
   ) {}
   async createSurveyResult(id: string, dto: CreateSurveyResultDto) {
     const surveyForm = await this.surveyFormModel.findById(id);
@@ -41,6 +43,7 @@ export class SurveyResultsService {
       });
     }
     surveyForm.participants.push(dto.user);
+    await this.usersService.increasePointBySurvey(surveyForm.cost, dto.user);
     await surveyForm.save();
     return;
   }
