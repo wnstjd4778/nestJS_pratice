@@ -1,4 +1,5 @@
 import { Prop } from '@nestjs/mongoose';
+import {IFile} from "./file";
 
 export interface Itodo {
   _id?: string;
@@ -10,4 +11,6 @@ export interface Itodo {
   done: boolean;
 
   user?: string;
+
+  attachments: Array<IFile | string>;
 }

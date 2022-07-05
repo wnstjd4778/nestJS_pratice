@@ -20,7 +20,7 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Request } from 'express';
-import { User } from '../decoreaters/user.decorater';
+import { User } from '../decorator/user.decorater';
 import { IUserProfile } from '../types/auth-tokens';
 import { Todo } from './schema/todo.schemas';
 import { Roles } from '../decorator/roles.decorator';
