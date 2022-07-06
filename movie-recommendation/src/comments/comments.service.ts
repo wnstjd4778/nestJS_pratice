@@ -66,7 +66,11 @@ export class CommentsService {
       throw new UnauthorizedException('해당 댓글을 삭제할 수 없습니다.');
     }
     const surveyForm = await this.surveyFormModel.findById(comment.surveyForm);
-
+    const idx = surveyForm.comments.findIndex(comment._id);
+    if (idx !== -1) {
+      surveyForm.comments.splice(idx, 1);
+      await surveyForm.save();
+    }
     await comment.deleteOne();
 
     return comment;
@@ -85,5 +89,6 @@ export class CommentsService {
       throw new UnauthorizedException('해당 댓글을 수정할 수 없습니다.');
     }
     await comment.updateOne(dto);
+    return this.commentModel.findById(commentId);
   }
 }

@@ -7,4 +7,5 @@ export const validationSchema = Joi.object({
   ADMIN_PASSWORD: Joi.string().required(),
   ADMIN_NAME: Joi.string().required(),
   ADMIN_PHONE: Joi.string().required(),
+  UPLOAD_DEST: Joi.string().required(),
 });

@@ -31,8 +31,15 @@ export class SurveyForm implements ISurveyForm {
   @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: null })
   participants: [string];
 
-  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Comment', default: null })
+  @Prop({
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Comment',
+    default: null,
+  })
   comments: [string];
+
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'File', default: null })
+  attachment: [string];
 }
 
 export type SurveyFormDocument = SurveyForm & mongoose.Document;

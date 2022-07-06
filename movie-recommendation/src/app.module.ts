@@ -21,11 +21,13 @@ import { SurveysModule } from './surveys/surveys.module';
 import { LoggingModule } from './logging/logging.module';
 import { CommentsModule } from './comments/comments.module';
 import {PageMiddleware} from "./middlewares/page.middleware";
+import { UploadsModule } from './uploads/uploads.module';
+import multerConfig from "./config/multer.config";
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: [join(__dirname, '../config', `.env`)],
-      load: [authConfig, adminConfig],
+      load: [authConfig, adminConfig, multerConfig],
       validationSchema,
       isGlobal: true,
     }),
@@ -41,6 +43,7 @@ import {PageMiddleware} from "./middlewares/page.middleware";
     SurveysModule,
     LoggingModule,
     CommentsModule,
+    UploadsModule,
   ],
   controllers: [],
   providers: [],
