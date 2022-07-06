@@ -6,7 +6,7 @@ import {
   RefreshToken,
   RefreshTokenSchema,
 } from './schemas/refresh-token.schema';
-import { Auth, AuthSchema } from './schemas/auth.schema';
+import { AuthModel, AuthSchema} from './schemas/auth.schema';
 import { AuthGuard } from './guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { RoleGuard } from './guards/role.guard';
@@ -15,7 +15,7 @@ import { RoleGuard } from './guards/role.guard';
   imports: [
     MongooseModule.forFeature([
       { name: RefreshToken.name, schema: RefreshTokenSchema },
-      { name: Auth.name, schema: AuthSchema },
+      { name: AuthModel.name, schema: AuthSchema },
     ]),
   ],
   controllers: [AuthController],

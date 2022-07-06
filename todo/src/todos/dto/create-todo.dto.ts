@@ -6,6 +6,9 @@ import {
   IsOptional, IsString,
   ValidateNested,
 } from 'class-validator';
+import {Todo} from "../../types/todo";
+
+type RequiredFieldType = Pick<Todo, 'title' | 'content'>
 
 export class CreateTodoDto {
   @IsNotEmpty()
@@ -18,6 +21,7 @@ export class CreateTodoDto {
   @IsBoolean()
   done: boolean;
 
+  @IsEmpty()
   user?: string;
 
   @IsString({ each: true })

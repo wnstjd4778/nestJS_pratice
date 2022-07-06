@@ -3,23 +3,23 @@ import { ConfigService, ConfigType } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { v4 as uuidV4 } from 'uuid';
 import { InjectModel } from '@nestjs/mongoose';
-import { Auth, AuthDocument } from './schemas/auth.schema';
+import {AuthDocument, AuthModel} from './schemas/auth.schema';
 import { Model } from 'mongoose';
 import {
   RefreshToken,
   RefreshTokenDocument,
 } from './schemas/refresh-token.schema';
 import { compareSync, hashSync } from 'bcrypt';
-import { IUser } from '../types/user';
-import { IAUth } from '../types/auth';
-import { IUserProfile, IAuthTokens } from '../types/auth-tokens';
+import { IUserProfile } from '../types/user';
+import { IAuthTokens } from '../types/auth-tokens';
 import { verify } from 'jsonwebtoken';
 import authConfig from '../config/auth.config';
+import { UserDocument } from '../users/schema/user.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(Auth.name) private authModel: Model<AuthDocument>,
+    @InjectModel(AuthModel.name) private authModel: Model<AuthDocument>,
     @InjectModel(RefreshToken.name)
     private refreshTokenModel: Model<RefreshTokenDocument>,
     @Inject(authConfig.KEY) private config: ConfigType<typeof authConfig>,
@@ -47,7 +47,10 @@ export class AuthService {
     return compareSync(password, exAuth.password);
   }
 
-  async createAuthentication(user: IUser, password: string): Promise<IAUth> {
+  async createAuthentication(
+    user: UserDocument,
+    password: string,
+  ): Promise<AuthDocument> {
     return await this.authModel.create({
       providerId: String(user._id),
       password: hashSync(password, 12),
