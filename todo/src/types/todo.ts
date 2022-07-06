@@ -1,9 +1,6 @@
-import { Prop } from '@nestjs/mongoose';
-import {IFile} from "./file";
+import { CreateBase } from './base';
 
-export interface Itodo {
-  _id?: string;
-
+export interface Todo extends CreateBase {
   title: string;
 
   content: string;
@@ -12,5 +9,7 @@ export interface Itodo {
 
   user?: string;
 
-  attachments: Array<IFile | string>;
+  attachments: Array<File | string>;
+
+  updatedAt: string;
 }

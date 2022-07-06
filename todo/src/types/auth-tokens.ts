@@ -5,11 +5,6 @@ export interface IAuthTokens {
   refreshToken: string;
 }
 
-export interface IUserProfile {
-  _id: string;
-  role: TUserRole;
-}
-
 export interface IRefreshTokenPayload {
   _id: string;
   value: string;

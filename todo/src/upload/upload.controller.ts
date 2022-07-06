@@ -9,9 +9,9 @@ import {
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { User } from '../decorator/user.decorater';
-import { IUserProfile } from '../types/auth-tokens';
 import { UploadService } from './upload.service';
-import { IFile } from '../types/file';
+import { FileDocument } from './schema/file.schema';
+import { IUserProfile } from '../types/user';
 
 @Controller('upload')
 export class UploadController {
@@ -23,7 +23,7 @@ export class UploadController {
   upload(
     @User() user: IUserProfile,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<IFile> {
+  ): Promise<FileDocument> {
     return this.uploadService.uploadFile(file, user._id);
   }
 
@@ -33,7 +33,7 @@ export class UploadController {
   uploadFiles(
     @User() user: IUserProfile,
     @UploadedFiles() files: Array<Express.Multer.File>,
-  ): Promise<IFile[]> {
+  ): Promise<FileDocument[]> {
     return this.uploadService.uploadFiles(files, user._id);
   }
 }

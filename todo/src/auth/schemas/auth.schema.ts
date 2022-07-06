@@ -1,14 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { User } from '../../users/schema/user.schema';
 import mongoose from 'mongoose';
-import { IAUth } from '../../types/auth';
+import { Auth } from '../../types/auth';
 
 export const AUTH_PROVIDERS = ['kakao', 'naver', 'local'] as const;
 export type TAuthProvider = typeof AUTH_PROVIDERS[number];
 
-@Schema()
-export class Auth implements IAUth {
+type RequiredFieldType = Pick<
+  Auth,
+  'provider' | 'providerId' | 'password' | 'user'
+>;
+type OptionalFieldType = Partial<Pick<Auth, 'provider'>>;
+type FieldType = RequiredFieldType & OptionalFieldType;
+
+@Schema({
+  collection: 'auth',
+  timestamps: { createdAt: true, updatedAt: false },
+})
+export class AuthModel implements FieldType {
   @Prop({ type: String, enum: AUTH_PROVIDERS, default: 'local' })
   provider: TAuthProvider;
 
@@ -23,5 +32,5 @@ export class Auth implements IAUth {
   user: string;
 }
 
-export type AuthDocument = Auth & Document;
-export const AuthSchema = SchemaFactory.createForClass(Auth);
+export type AuthDocument = AuthModel & Document;
+export const AuthSchema = SchemaFactory.createForClass(AuthModel);

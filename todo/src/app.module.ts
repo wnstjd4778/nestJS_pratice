@@ -25,6 +25,7 @@ import { utilities as nestWinstonUtilities, WinstonModule } from 'nest-winston';
 import { LoggingModule } from './logging/logging.module';
 import { LoggingTestModule } from './logging-test/logging-test.module';
 import { UploadModule } from './upload/upload.module';
+import { BatchModule } from './batch/batch.module';
 import * as winston from 'winston';
 import multerConfig from './config/multer.config';
 
@@ -55,6 +56,7 @@ import multerConfig from './config/multer.config';
     LoggingTestModule,
     LoggingModule,
     UploadModule,
+    BatchModule,
   ],
   controllers: [],
   providers: [],
@@ -72,12 +74,12 @@ export class AppModule implements NestModule, OnApplicationBootstrap {
     this.createAdmin();
   }
   private async createAdmin(): Promise<void> {
-    const { Auth, User } = this.connection.models;
+    const { AuthModel, UserModel } = this.connection.models;
     const { email, name, phone, password } = this.config;
-    const exAdmin = await User.findOne({ email });
+    const exAdmin = await UserModel.findOne({ email });
     if (!exAdmin) {
-      const user = await User.create({ email, name, phone, password });
-      const auth = await Auth.create({
+      const user = await UserModel.create({ email, name, phone, password });
+      const auth = await AuthModel.create({
         provider: 'local',
         providerId: String(user._id),
         password: hashSync(password, 12),

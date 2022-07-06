@@ -21,10 +21,11 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Request } from 'express';
 import { User } from '../decorator/user.decorater';
-import { IUserProfile } from '../types/auth-tokens';
-import { Todo } from './schema/todo.schemas';
 import { Roles } from '../decorator/roles.decorator';
 import { WINSTON_MODULE_PROVIDER, WinstonLogger } from 'nest-winston';
+import { Todo } from '../types/todo';
+import { IUserProfile } from '../types/user';
+import { TodoDocument } from './schema/todo.schemas';
 
 @Controller('todos')
 export class TodosController {
@@ -38,7 +39,7 @@ export class TodosController {
   findMyAll(
     @User() user: IUserProfile,
     @Query() query: QueryTodoDto,
-  ): Promise<Todo[]> {
+  ): Promise<TodoDocument[]> {
     query.user = user._id;
     return this.todosService.findAll(query);
   }

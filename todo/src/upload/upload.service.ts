@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { File, FileDocument } from './schema/file.schema';
+import { FileModel, FileDocument } from './schema/file.schema';
 import { Model } from 'mongoose';
-import { IFile } from '../types/file';
 
 @Injectable()
 export class UploadService {
-  constructor(@InjectModel(File.name) private fileModel: Model<FileDocument>) {}
+  constructor(
+    @InjectModel(FileModel.name) private fileModel: Model<FileDocument>,
+  ) {}
 
-  async uploadFile(file: Express.Multer.File, userId: string): Promise<IFile> {
+  async uploadFile(
+    file: Express.Multer.File,
+    userId: string,
+  ): Promise<FileDocument> {
     return this.fileModel.create({
       filename: file.originalname,
       key: file.filename,
@@ -21,7 +25,7 @@ export class UploadService {
   uploadFiles(
     files: Array<Express.Multer.File>,
     userId: string,
-  ): Promise<IFile[]> {
+  ): Promise<FileDocument[]> {
     return Promise.all(
       files.map((file) =>
         this.fileModel.create({

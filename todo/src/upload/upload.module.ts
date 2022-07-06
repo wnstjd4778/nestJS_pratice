@@ -3,7 +3,7 @@ import { UploadController } from './upload.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from './multer-config/multer-config.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { File, FileSchema } from './schema/file.schema';
+import { FileModel, FileSchema} from './schema/file.schema';
 import { UploadService } from './upload.service';
 import { AuthModule } from '../auth/auth.module';
 
@@ -12,7 +12,7 @@ import { AuthModule } from '../auth/auth.module';
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),
-    MongooseModule.forFeature([{ name: File.name, schema: FileSchema }]),
+    MongooseModule.forFeature([{ name: FileModel.name, schema: FileSchema }]),
     AuthModule,
   ],
   controllers: [UploadController],
