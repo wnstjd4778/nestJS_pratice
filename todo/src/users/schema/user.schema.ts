@@ -1,15 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';
-import { IUser } from '../../types/user';
+import { User } from '../../types/user';
 
 export const USER_ROLES = ['member', 'admin'] as const;
 export type TUserRole = typeof USER_ROLES[number];
 
 @Schema({
+  collection: 'user',
   timestamps: { createdAt: 'joinedAt', updatedAt: true },
 })
-export class User implements IUser {
+export class UserModel
+  implements Pick<User, 'role' | 'email' | 'name' | 'phone' | 'auth'>
+{
   @Prop({ type: String, enum: USER_ROLES, default: 'member' })
   role: TUserRole;
 
@@ -26,5 +29,5 @@ export class User implements IUser {
   auth: string;
 }
 
-export type UserDocument = User & Document;
-export const UserSchema = SchemaFactory.createForClass(User);
+export type UserDocument = UserModel & Document;
+export const UserSchema = SchemaFactory.createForClass(UserModel);

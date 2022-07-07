@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Todo, TodoDocument } from './schema/todo.schemas';
+import { TodoDocument, TodoModel } from './schema/todo.schemas';
 import { Connection, Model } from 'mongoose';
 import { QueryTodoDto } from './dto/query-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import {UploadService} from "../upload/upload.service";
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class TodosService {
   constructor(
-    @InjectModel(Todo.name) private todoModel: Model<TodoDocument>,
+    @InjectModel(TodoModel.name) private todoModel: Model<TodoDocument>,
     @InjectConnection() private connection: Connection,
     private readonly uploadService: UploadService,
   ) {}
@@ -27,7 +27,7 @@ export class TodosService {
   }
 
   async create(dto: CreateTodoDto): Promise<TodoDocument> {
-    const { File } = this.connection.models;
+    const { FileModel } = this.connection.models;
     const todoDocument = await this.todoModel.create(dto);
 
     return todoDocument;
