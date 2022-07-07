@@ -1,28 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER, WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { utilities as nestWinstonUtilities } from 'nest-winston/dist/winston.utilities';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
 import { CupInterceptor } from './interceptors/cup.interceptor';
+import { ConfigService } from '@nestjs/config';
+import { logger, settingSwagger } from './setting';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: WinstonModule.createLogger({
-      transports: [
-        new winston.transports.Console({
-          level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.ms(),
-            nestWinstonUtilities.format.nestLike('TodoApp', {
-              prettyPrint: true,
-            }),
-          ),
-        }),
-      ],
-    }),
+    logger,
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -30,7 +19,13 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new CupInterceptor());
+  const configService = app.get(ConfigService);
+  const port = +(configService.get('PORT') | 3000);
   app.useGlobalInterceptors(new TransformInterceptor());
-  await app.listen(3000);
+  if (process.env.NODE_ENV !== 'production') {
+    settingSwagger(app);
+  }
+  await app.listen(port);
+  Logger.log(`Server is running ${port}`);
 }
 bootstrap();

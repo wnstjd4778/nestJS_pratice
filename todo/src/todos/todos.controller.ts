@@ -26,7 +26,11 @@ import { WINSTON_MODULE_PROVIDER, WinstonLogger } from 'nest-winston';
 import { Todo } from '../types/todo';
 import { IUserProfile } from '../types/user';
 import { TodoDocument } from './schema/todo.schemas';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+
+@ApiBearerAuth()
+@ApiTags('Todo')
 @Controller('todos')
 export class TodosController {
   constructor(
