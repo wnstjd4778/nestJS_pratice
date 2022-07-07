@@ -2,6 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';
 import { Auth } from '../../types/auth';
+import passport from 'passport';
+import { compareSync, hashSync } from 'bcrypt';
 
 export const AUTH_PROVIDERS = ['kakao', 'naver', 'local'] as const;
 export type TAuthProvider = typeof AUTH_PROVIDERS[number];
@@ -26,11 +28,21 @@ export class AuthModel implements FieldType {
   providerId: string;
 
   @Prop({ type: String, required: true })
-  password: string;
+  hashedPassword: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, default: null })
   user: string;
+
+  password: string;
+  validatePassword: (password: string) => boolean;
 }
 
 export type AuthDocument = AuthModel & Document;
 export const AuthSchema = SchemaFactory.createForClass(AuthModel);
+AuthSchema.virtual('password').set(function (password: string) {
+  this.hashedPassword = hashSync(password, 12);
+});
+
+AuthSchema.methods.validatePassword = function (password: string) {
+  return compareSync(password, this.hashedPassword);
+};

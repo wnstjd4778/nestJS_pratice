@@ -1,10 +1,15 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService, ConfigType } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { v4 as uuidV4 } from 'uuid';
-import { InjectModel } from '@nestjs/mongoose';
-import {AuthDocument, AuthModel} from './schemas/auth.schema';
-import { Model } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { AuthDocument, AuthModel } from './schemas/auth.schema';
+import { Connection, Model } from 'mongoose';
 import {
   RefreshToken,
   RefreshTokenDocument,
@@ -14,18 +19,36 @@ import { IUserProfile } from '../types/user';
 import { IAuthTokens } from '../types/auth-tokens';
 import { verify } from 'jsonwebtoken';
 import authConfig from '../config/auth.config';
-import { UserDocument } from '../users/schema/user.schema';
+import { UserDocument, UserModel } from '../users/schema/user.schema';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectConnection() private connection: Connection,
     @InjectModel(AuthModel.name) private authModel: Model<AuthDocument>,
     @InjectModel(RefreshToken.name)
     private refreshTokenModel: Model<RefreshTokenDocument>,
     @Inject(authConfig.KEY) private config: ConfigType<typeof authConfig>,
+    private readonly jwtService: JwtService,
   ) {}
 
-  signAccessToken(payload: IUserProfile): string {
+  async validateUser(email: string, password: string): Promise<IUserProfile> {
+    const { UserModel } = this.connection.models;
+    const exUser: UserDocument = await UserModel.findOne({ email });
+    if (!exUser) {
+      throw new NotFoundException('찾을 수 없는 사용자입니다.');
+    }
+    const exAuth: AuthDocument = await this.authModel.findById(exUser.auth);
+    if (!exAuth.validatePassword(password)) {
+      throw new UnauthorizedException('잘못된 비밀번호입니다.');
+    }
+    return {
+      _id: exUser._id,
+      role: exUser.role,
+    };
+  }
+  private signAccessToken(payload: IUserProfile): string {
     return jwt.sign(payload, this.config.jwt_secret, {
       expiresIn: '1d',
       audience: 'todo.com',
@@ -33,7 +56,7 @@ export class AuthService {
     });
   }
 
-  async signRefreshToken(userId: string): Promise<string> {
+  private async signRefreshToken(userId: string): Promise<string> {
     const token = uuidV4();
     await this.refreshTokenModel.create({
       user: userId,
@@ -99,5 +122,12 @@ export class AuthService {
       }
       throw new UnauthorizedException(message);
     }
+  }
+
+  async login(profile: IUserProfile): Promise<IAuthTokens> {
+    return {
+      accessToken: this.signAccessToken(profile),
+      refreshToken: await this.signRefreshToken(profile._id),
+    };
   }
 }

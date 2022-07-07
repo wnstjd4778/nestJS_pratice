@@ -3,14 +3,17 @@ import {
   IsBoolean,
   IsEmpty,
   IsNotEmpty,
-  IsOptional, IsString,
+  IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
-import {Todo} from "../../types/todo";
+import { Todo } from '../../types/todo';
+import { ApiProperty } from '@nestjs/swagger';
 
-type RequiredFieldType = Pick<Todo, 'title' | 'content'>
+type RequiredFieldType = Pick<Todo, 'title' | 'content'>;
 
-export class CreateTodoDto {
+export class CreateTodoDto implements RequiredFieldType {
+  @ApiProperty()
   @IsNotEmpty()
   title: string;
 
