@@ -22,6 +22,7 @@ import { LoggingModule } from './logging/logging.module';
 import { CommentsModule } from './comments/comments.module';
 import {PageMiddleware} from "./middlewares/page.middleware";
 import { UploadsModule } from './uploads/uploads.module';
+import { BatchModule } from './batch/batch.module';
 import multerConfig from "./config/multer.config";
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import multerConfig from "./config/multer.config";
     LoggingModule,
     CommentsModule,
     UploadsModule,
+    BatchModule,
   ],
   controllers: [],
   providers: [],
@@ -65,11 +67,11 @@ export class AppModule implements NestModule, OnApplicationBootstrap {
 
   async createAdmin() {
     const { email, password, name, phone } = this.config;
-    const { User, Auth } = this.connection.models;
-    const exUser = await User.findOne({ email });
+    const { UserModel, AuthModel } = this.connection.models;
+    const exUser = await UserModel.findOne({ email });
     if (!exUser) {
-      const user = await User.create({ email, password, name, phone });
-      const auth = await Auth.create({
+      const user = await UserModel.create({ email, password, name, phone });
+      const auth = await AuthModel.create({
         provider: 'local',
         providerId: String(user._id),
         user: user._id,

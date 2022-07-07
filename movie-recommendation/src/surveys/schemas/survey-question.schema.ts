@@ -1,8 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { SurveyQuestion } from '../../types/survey-question';
 
-@Schema({ timestamps: true })
-export class SurveyQuestion {
+type FieldType = Pick<SurveyQuestion, 'question' | 'isMultipleChoice'> &
+  Partial<Pick<SurveyQuestion, 'choice' | 'surveyForm'>>;
+
+@Schema({ timestamps: true, collection: 'surveyQuestion' })
+export class SurveyQuestionModel implements FieldType {
   @Prop({ type: String, required: true })
   question: string;
 
@@ -15,11 +19,11 @@ export class SurveyQuestion {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     default: null,
-    ref: 'SurveyForm',
+    ref: 'SurveyFormModel',
   })
   surveyForm: string;
 }
 
-export type SurveyQuestionDocument = SurveyQuestion & mongoose.Document;
+export type SurveyQuestionDocument = SurveyQuestionModel & mongoose.Document;
 export const SurveyQuestionSchema =
-  SchemaFactory.createForClass(SurveyQuestion);
+  SchemaFactory.createForClass(SurveyQuestionModel);

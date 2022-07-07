@@ -5,27 +5,30 @@ import {
 } from '@nestjs/common';
 import { QuerySurveyFormDto } from './dto/query-survey-form.dto';
 import { UpdateSurveyFormDto } from './dto/update-survey-form.dto';
-import { ISurveyForm } from '../../types/survey-form';
 import { InjectModel } from '@nestjs/mongoose';
-import { SurveyForm, SurveyFormDocument } from '../schemas/survey-form.schema';
+import {
+  SurveyFormDocument,
+  SurveyFormModel,
+} from '../schemas/survey-form.schema';
 import { Model } from 'mongoose';
 import {
-  SurveyQuestion,
   SurveyQuestionDocument,
+  SurveyQuestionModel,
 } from '../schemas/survey-question.schema';
 import { IAccessTokenPayload } from '../../types/auth-tokens';
 import { CreateSurveyFormDto } from './dto/create-survey-form.dto';
-import { User, UserDocument } from '../../users/schema/user.schema';
 import { UsersService } from '../../users/users.service';
+import { UploadsService } from '../../uploads/uploads.service';
 
 @Injectable()
 export class SurveyFormsService {
   constructor(
-    @InjectModel(SurveyForm.name)
+    @InjectModel(SurveyFormModel.name)
     private surveyFormModel: Model<SurveyFormDocument>,
-    @InjectModel(SurveyQuestion.name)
+    @InjectModel(SurveyQuestionModel.name)
     private surveyQuestionModel: Model<SurveyQuestionDocument>,
     private usersService: UsersService,
+    private uploadsService: UploadsService,
   ) {}
   async findAllSurveyForms(
     query: QuerySurveyFormDto,
@@ -47,15 +50,21 @@ export class SurveyFormsService {
   async createSurveyForm(
     dto: CreateSurveyFormDto,
   ): Promise<SurveyFormDocument> {
-    const { title, content, writer, cost, maxResult } = dto;
-
-    return this.surveyFormModel.create({
+    const { title, content, writer, cost, maxResult, attachments } = dto;
+    const surveyForm = await this.surveyFormModel.create({
       writer,
       content,
       cost,
       title,
       maxResult,
+      attachments,
     });
+    await this.uploadsService.connectFiles(
+      surveyForm._id,
+      'SurveyForm',
+      attachments,
+    );
+    return surveyForm;
   }
 
   async updateSurveyForm(
@@ -66,21 +75,28 @@ export class SurveyFormsService {
     if (!surveyForm) {
       throw new NotFoundException('해당 설문조사를 찾을 수 없습니다.');
     }
-    if (String(surveyForm.writer) !== dto.user) {
+    if (String(surveyForm.writer) !== dto.writer) {
       throw new UnauthorizedException('해당 설문조사에 접근할 수 없습니다.');
     }
-    await this.surveyQuestionModel.updateMany(
-      { _id: { $in: dto.questions } },
-      { surveyForm: surveyForm._id },
-    );
-    await surveyForm.updateOne(dto);
-    dto.questions.forEach((value) => {
-      if (!surveyForm.surveyQuestions.includes(value)) {
-        surveyForm.surveyQuestions.push(value);
-      }
-    });
-    await surveyForm.save();
+    if (dto.surveyQuestions) {
+      await this.surveyQuestionModel.updateMany(
+        { _id: { $in: dto.surveyQuestions } },
+        { surveyForm: surveyForm._id },
+      );
+      dto.surveyQuestions.forEach((value) => {
+        if (!surveyForm.surveyQuestions.includes(value)) {
+          surveyForm.surveyQuestions.push(value);
+        }
+      });
+    }
 
+    await surveyForm.updateOne(dto);
+    await surveyForm.save();
+    await this.uploadsService.updateFiles(
+      surveyForm._id,
+      'SurveyForm',
+      dto.attachments,
+    );
     return this.surveyFormModel
       .findOne({ _id: id })
       .populate('surveyQuestions');

@@ -6,19 +6,22 @@ import {
 import { CreateSurveyResultDto } from './dto/create-survey-result.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import {
-  SurveyResult,
   SurveyResultDocument,
+  SurveyResultModel,
 } from '../schemas/survey-result.schema';
 import { Model } from 'mongoose';
-import { SurveyForm, SurveyFormDocument } from '../schemas/survey-form.schema';
+import {
+  SurveyFormDocument,
+  SurveyFormModel,
+} from '../schemas/survey-form.schema';
 import { UsersService } from '../../users/users.service';
 
 @Injectable()
 export class SurveyResultsService {
   constructor(
-    @InjectModel(SurveyResult.name)
+    @InjectModel(SurveyResultModel.name)
     private surveyResultModel: Model<SurveyResultDocument>,
-    @InjectModel(SurveyForm.name)
+    @InjectModel(SurveyFormModel.name)
     private surveyFormModel: Model<SurveyFormDocument>,
     private readonly usersService: UsersService,
   ) {}

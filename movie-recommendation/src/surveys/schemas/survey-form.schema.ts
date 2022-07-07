@@ -1,8 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { ISurveyForm } from '../../types/survey-form';
-@Schema({ timestamps: true })
-export class SurveyForm implements ISurveyForm {
+import { SurveyForm } from '../../types/survey-form';
+
+type FieldType = Pick<
+  SurveyForm,
+  'title' | 'content' | 'surveyQuestions' | 'writer' | 'maxResult'
+> &
+  Partial<
+    Pick<SurveyForm, 'viewCnt' | 'attachments' | 'comments' | 'participants'>
+  >;
+
+@Schema({ collection: 'surveyForm', timestamps: true })
+export class SurveyFormModel implements FieldType {
   @Prop({ type: String, required: true, index: true })
   title: string;
 
@@ -12,11 +21,11 @@ export class SurveyForm implements ISurveyForm {
   @Prop({
     type: [mongoose.Schema.Types.ObjectId],
     default: null,
-    ref: 'SurveyQuestion',
+    ref: 'SurveyQuestionModel',
   })
   surveyQuestions: [string];
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'UserModel' })
   writer: string;
 
   @Prop({ type: Number, default: 0 })
@@ -28,19 +37,19 @@ export class SurveyForm implements ISurveyForm {
   @Prop({ type: Number, required: true })
   maxResult: number;
 
-  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: null })
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'UserModel', default: null })
   participants: [string];
 
   @Prop({
     type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Comment',
+    ref: 'CommentModel',
     default: null,
   })
   comments: [string];
 
-  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'File', default: null })
-  attachment: [string];
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'FileModel', default: null })
+  attachments: [string];
 }
 
-export type SurveyFormDocument = SurveyForm & mongoose.Document;
-export const SurveyFormSchema = SchemaFactory.createForClass(SurveyForm);
+export type SurveyFormDocument = SurveyFormModel & mongoose.Document;
+export const SurveyFormSchema = SchemaFactory.createForClass(SurveyFormModel);

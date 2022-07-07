@@ -1,20 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-@Schema({ timestamps: true })
-export class SurveyResult {
+import { SurveyResult } from '../../types/survey-result';
+
+type FieldType = Pick<SurveyResult, 'surveyQuestion' | 'user' | 'answers'>;
+
+@Schema({ collection: 'surveyResult', timestamps: true })
+export class SurveyResultModel implements FieldType{
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'SurveyQuestion',
+    ref: 'SurveyQuestionModel',
   })
   surveyQuestion: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'UserModel' })
   user: string;
 
   @Prop({ type: [String], required: true })
-  answer: string;
+  answers: [string];
 }
 
-export type SurveyResultDocument = SurveyResult & mongoose.Document;
-export const SurveyResultSchema = SchemaFactory.createForClass(SurveyResult);
+export type SurveyResultDocument = SurveyResultModel & mongoose.Document;
+export const SurveyResultSchema =
+  SchemaFactory.createForClass(SurveyResultModel);

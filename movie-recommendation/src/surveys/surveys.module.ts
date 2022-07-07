@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SurveyForm, SurveyFormSchema } from './schemas/survey-form.schema';
 import {
-  SurveyResult,
+  SurveyFormModel,
+  SurveyFormSchema,
+} from './schemas/survey-form.schema';
+import {
+  SurveyResultModel,
   SurveyResultSchema,
 } from './schemas/survey-result.schema';
 import {
-  SurveyQuestion,
+  SurveyQuestionModel,
   SurveyQuestionSchema,
 } from './schemas/survey-question.schema';
 import { SurveyFormsController } from './survey-forms/survey-forms.controller';
@@ -18,16 +21,18 @@ import { SurveyQuestionsController } from './survey-questions/survey-questions.c
 import { AuthService } from '../auth/auth.service';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
+import { UploadsModule } from '../uploads/uploads.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: SurveyForm.name, schema: SurveyFormSchema },
-      { name: SurveyResult.name, schema: SurveyResultSchema },
-      { name: SurveyQuestion.name, schema: SurveyQuestionSchema },
+      { name: SurveyFormModel.name, schema: SurveyFormSchema },
+      { name: SurveyResultModel.name, schema: SurveyResultSchema },
+      { name: SurveyQuestionModel.name, schema: SurveyQuestionSchema },
     ]),
     AuthModule,
     UsersModule,
+    UploadsModule,
   ],
   controllers: [
     SurveyFormsController,

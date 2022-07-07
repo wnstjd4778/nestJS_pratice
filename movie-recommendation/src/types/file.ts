@@ -1,15 +1,12 @@
-import mongoose from 'mongoose';
-
-export const FILE_REF_TYPE = ['Todo'] as const;
+export const FILE_REF_TYPE = ['SurveyForm', 'SurveyQuestion'] as const;
 export type TFile = typeof FILE_REF_TYPE[number];
 
-export interface IFile {
-  _id?: string;
-  key: string; // url, aws s3키
+export interface File {
+  key: string;
   filename: string;
-  size?: number;
+  size: number;
   ref: string | null;
   refType: TFile | null;
   mimetype: string;
-  creator?: string;
+  creator: string;
 }

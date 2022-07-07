@@ -1,6 +1,13 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { SurveyForm } from '../../../types/survey-form';
 
-export class UpdateSurveyFormDto {
+type FieldType = Partial<
+  Pick<
+    SurveyForm,
+    'title' | 'content' | 'surveyQuestions' | 'writer' | 'attachments'
+  >
+>;
+export class UpdateSurveyFormDto implements FieldType {
   @IsString()
   @IsOptional()
   title?: string;
@@ -11,8 +18,12 @@ export class UpdateSurveyFormDto {
 
   @IsString({ each: true })
   @IsOptional()
-  questions?: [string];
+  surveyQuestions?: [string];
 
   @IsOptional()
-  user?: string;
+  writer?: string;
+
+  @IsString({ each: true })
+  @IsOptional()
+  attachments: [string];
 }

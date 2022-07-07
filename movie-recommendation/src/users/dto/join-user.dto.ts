@@ -1,6 +1,10 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { User } from '../../types/user';
+import { Auth } from '../../types/auth';
 
-export class JoinUserDto {
+type FieldType = Pick<User & Auth, 'email' | 'name' | 'phone' | 'password'>
+
+export class JoinUserDto implements FieldType {
   @IsEmail()
   @IsNotEmpty()
   email: string;

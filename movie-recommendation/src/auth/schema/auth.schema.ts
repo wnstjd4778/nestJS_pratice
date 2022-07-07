@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { User } from '../../users/schema/user.schema';
-import { AUTH_PROVIDERS, TAuthProvider } from '../../types/auth';
+import { Auth, AUTH_PROVIDERS, TAuthProvider } from '../../types/auth';
 
-@Schema()
-export class Auth {
+type FieldType = Pick<Auth, 'password' | 'provider' | 'providerId' | 'user'>;
+
+@Schema({ collection: 'auth' })
+export class AuthModel implements FieldType {
   @Prop({ type: String, enum: AUTH_PROVIDERS, default: 'local' })
   provider: TAuthProvider;
 
@@ -23,5 +24,5 @@ export class Auth {
   user: string;
 }
 
-export type AuthDocument = Auth & mongoose.Document;
-export const AuthSchema = SchemaFactory.createForClass(Auth);
+export type AuthDocument = AuthModel & mongoose.Document;
+export const AuthSchema = SchemaFactory.createForClass(AuthModel);

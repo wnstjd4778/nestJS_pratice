@@ -6,22 +6,22 @@ import {
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from '../users/schema/user.schema';
+import { UserDocument, UserModel } from '../users/schema/user.schema';
 import { Model } from 'mongoose';
 import {
-  SurveyForm,
   SurveyFormDocument,
+  SurveyFormModel,
 } from '../surveys/schemas/survey-form.schema';
-import { Comment, CommentDocument } from './schemas/comment.schema';
+import { CommentDocument, CommentModel} from './schemas/comment.schema';
 import { IPaging } from '../types/paging';
 
 @Injectable()
 export class CommentsService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(SurveyForm.name)
+    @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
+    @InjectModel(SurveyFormModel.name)
     private surveyFormModel: Model<SurveyFormDocument>,
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    @InjectModel(CommentModel.name) private commentModel: Model<CommentDocument>,
   ) {}
   async findAllBySurveyFormId(
     paging: IPaging,

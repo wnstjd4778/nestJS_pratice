@@ -62,7 +62,7 @@ export class SurveyFormsController {
     @Param('id') id: string,
     @Body() dto: UpdateSurveyFormDto,
   ) {
-    dto.user = user._id;
+    dto.writer = user._id;
     return this.surveyFormsService.updateSurveyForm(id, dto);
   }
 

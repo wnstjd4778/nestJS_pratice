@@ -1,6 +1,9 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { User } from '../../types/user';
+import { Auth } from '../../types/auth';
 
-export class LoginUserDto {
+type FieldType = Pick<User & Auth, 'email' | 'password'>;
+export class LoginUserDto implements FieldType {
   @IsEmail()
   email: string;
 

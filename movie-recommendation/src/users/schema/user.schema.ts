@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { Auth } from '../../auth/schema/auth.schema';
-import { IUser, TUserRole, USER_ROLES } from '../../types/user';
+import { User, TUserRole, USER_ROLES } from '../../types/user';
 
-@Schema()
-export class User implements IUser {
+type FieldType = Pick<User, 'email' | 'name' | 'phone'> &
+  Partial<Pick<User, 'role' | 'auth' | 'point'>>;
+@Schema({ collection: 'user' })
+export class UserModel implements FieldType {
   @Prop({ type: String, required: true, index: true, unique: true })
   email: string;
 
@@ -12,17 +13,17 @@ export class User implements IUser {
   name: string;
 
   @Prop({ type: String, enum: USER_ROLES, default: 'member' })
-  role: TUserRole;
+  role?: TUserRole;
 
   @Prop({ type: String })
   phone: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Auth', default: null })
-  auth: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'AuthModel', default: null })
+  auth?: string;
 
   @Prop({ type: Number, default: 0 })
-  point: number;
+  point?: number;
 }
 
-export type UserDocument = User & mongoose.Document;
-export const UserSchema = SchemaFactory.createForClass(User);
+export type UserDocument = UserModel & mongoose.Document;
+export const UserSchema = SchemaFactory.createForClass(UserModel);

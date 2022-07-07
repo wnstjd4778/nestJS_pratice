@@ -1,5 +1,5 @@
-export interface ISurveyQuestion {
-  _id?: string;
+export interface SurveyQuestion {
+  _id: string;
   question: string;
   isMultipleChoice: boolean;
   choice?: [string];

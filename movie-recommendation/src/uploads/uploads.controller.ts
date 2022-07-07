@@ -21,6 +21,7 @@ export class UploadsController {
     @UploadedFile() file: Express.Multer.File,
     @User() user: IAccessTokenPayload,
   ) {
+    console.log(file);
     return this.uploadsService.uploadFile(user._id, file);
   }
 }

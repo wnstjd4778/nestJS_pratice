@@ -1,30 +1,44 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { FILE_REF_TYPE, IFile, TFile } from '../../types/file';
+import { File, FILE_REF_TYPE, TFile } from '../../types/file';
 
-@Schema({ timestamps: { createdAt: true, updatedAt: false } })
-export class File implements IFile {
+type FieldType = Pick<
+  File,
+  'key' | 'filename' | 'size' | 'mimetype' | 'creator'
+> &
+  Partial<Pick<File, 'ref' | 'refType'>>;
+
+@Schema({
+  collection: 'file',
+  timestamps: { createdAt: true, updatedAt: false },
+})
+export class FileModel implements FieldType {
   @Prop({ type: String })
   key: string; // url, aws s3키
 
-  @Prop({ type: String, unique: true, required: true })
+  @Prop({ type: String, required: true })
   filename: string;
 
   @Prop({ type: Number })
-  size?: number;
+  size: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, default: null, index: true })
-  ref: string | null;
+  ref?: string | null;
 
-  @Prop({ type: String, enum: [...FILE_REF_TYPE, null], index: true })
-  refType: TFile | null;
+  @Prop({
+    type: String,
+    enum: [...FILE_REF_TYPE, null],
+    index: true,
+    default: null,
+  })
+  refType?: TFile | null;
 
   @Prop({ type: String })
   mimetype: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
-  creator?: string;
+  creator: string;
 }
 
-export type FileDocument = File & mongoose.Document;
-export const FileSchema = SchemaFactory.createForClass(File);
+export type FileDocument = FileModel & mongoose.Document;
+export const FileSchema = SchemaFactory.createForClass(FileModel);

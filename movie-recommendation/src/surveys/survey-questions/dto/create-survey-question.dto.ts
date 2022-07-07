@@ -5,8 +5,12 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { SurveyQuestion } from '../../../types/survey-question';
 
-export class CreateSurveyQuestionDto {
+type FieldType = Pick<SurveyQuestion, 'question' | 'isMultipleChoice'> &
+  Partial<Pick<SurveyQuestion, 'choice'>>;
+
+export class CreateSurveyQuestionDto implements FieldType {
   @IsString()
   @IsNotEmpty()
   question: string;
