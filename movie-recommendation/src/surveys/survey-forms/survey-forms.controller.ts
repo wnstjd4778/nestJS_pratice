@@ -18,7 +18,10 @@ import { AuthGuard } from '../../auth/guard/auth.guard';
 import { User } from '../../decorators/user.decorator';
 import { IAccessTokenPayload } from '../../types/auth-tokens';
 import { SurveyFormDocument } from '../schemas/survey-form.schema';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiTags('survey-forms')
 @Controller('survey-forms')
 export class SurveyFormsController {
   constructor(private readonly surveyFormsService: SurveyFormsService) {}
@@ -71,4 +74,8 @@ export class SurveyFormsController {
   deleteSurveyForm(@User() user: IAccessTokenPayload, @Param('id') id: string) {
     return this.surveyFormsService.deleteSurveyForm(user, id);
   }
+
+  @UseGuards(AuthGuard)
+  @Post(':surveyFormId/grade')
+
 }

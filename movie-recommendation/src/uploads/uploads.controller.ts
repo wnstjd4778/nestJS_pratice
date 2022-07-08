@@ -10,7 +10,11 @@ import { AuthGuard } from '../auth/guard/auth.guard';
 import { User } from '../decorators/user.decorator';
 import { IAccessTokenPayload } from '../types/auth-tokens';
 import { UploadsService } from './uploads.service';
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 
+
+@ApiBearerAuth()
+@ApiTags('uploads')
 @Controller('uploads')
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}

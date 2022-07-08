@@ -2,7 +2,8 @@ import {
   Inject,
   MiddlewareConsumer,
   Module,
-  NestModule, OnApplicationBootstrap,
+  NestModule,
+  OnApplicationBootstrap,
   OnModuleInit,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
@@ -20,10 +21,10 @@ import { hashSync } from 'bcrypt';
 import { SurveysModule } from './surveys/surveys.module';
 import { LoggingModule } from './logging/logging.module';
 import { CommentsModule } from './comments/comments.module';
-import {PageMiddleware} from "./middlewares/page.middleware";
+import { PageMiddleware } from './middlewares/page.middleware';
 import { UploadsModule } from './uploads/uploads.module';
 import { BatchModule } from './batch/batch.module';
-import multerConfig from "./config/multer.config";
+import multerConfig from './config/multer.config';
 @Module({
   imports: [
     ConfigModule.forRoot({

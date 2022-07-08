@@ -4,7 +4,10 @@ import { SurveyResultsService } from './survey-results.service';
 import { AuthGuard } from '../../auth/guard/auth.guard';
 import { User } from '../../decorators/user.decorator';
 import { IAccessTokenPayload } from '../../types/auth-tokens';
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 
+@ApiBearerAuth()
+@ApiTags('survey-results')
 @Controller('survey-results')
 export class SurveyResultsController {
   constructor(private readonly surveyResultsService: SurveyResultsService) {}

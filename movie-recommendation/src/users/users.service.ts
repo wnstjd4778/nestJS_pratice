@@ -7,10 +7,11 @@ import {
 import { LoginUserDto } from './dto/login-user.dto';
 import { IAuthToken } from './dto/auth-tokens';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDocument, UserModel} from './schema/user.schema';
+import { UserDocument, UserModel } from './schema/user.schema';
 import { Model } from 'mongoose';
 import { JoinUserDto } from './dto/join-user.dto';
 import { AuthService } from '../auth/auth.service';
+import { ChargePointDto } from './dto/charge-point.dto';
 
 @Injectable()
 export class UsersService {
@@ -91,5 +92,15 @@ export class UsersService {
     user.point += surveyPoint;
     await user.save();
     return;
+  }
+
+  async chargePoint(
+    userId: string,
+    dto: ChargePointDto,
+  ): Promise<UserDocument> {
+    const user = await this.userModel.findById(userId);
+    user.point += dto.point;
+    await user.save();
+    return this.userModel.findById(userId);
   }
 }

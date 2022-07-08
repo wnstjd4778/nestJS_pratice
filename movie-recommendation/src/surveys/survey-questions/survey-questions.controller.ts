@@ -14,7 +14,10 @@ import { UpdateSurveyQuestionDto } from './dto/update-survey-question.dto';
 import { User } from '../../decorators/user.decorator';
 import { IAccessTokenPayload } from '../../types/auth-tokens';
 import { CreateSurveyQuestionDto } from './dto/create-survey-question.dto';
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 
+@ApiBearerAuth()
+@ApiTags('survey-questions')
 @Controller('survey-questions')
 export class SurveyQuestionsController {
   constructor(
