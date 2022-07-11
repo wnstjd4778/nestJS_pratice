@@ -27,7 +27,7 @@ import { Todo } from '../types/todo';
 import { IUserProfile } from '../types/user';
 import { TodoDocument } from './schema/todo.schemas';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-
+import { Auth } from '../decorator/auth.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Todo')
@@ -39,7 +39,7 @@ export class TodosController {
   ) {}
 
   @Get('me')
-  @UseGuards(AuthGuard)
+  @Auth()
   findMyAll(
     @User() user: IUserProfile,
     @Query() query: QueryTodoDto,

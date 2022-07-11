@@ -40,6 +40,7 @@ export class AuthService {
       throw new NotFoundException('찾을 수 없는 사용자입니다.');
     }
     const exAuth: AuthDocument = await this.authModel.findById(exUser.auth);
+    console.log(exAuth);
     if (!exAuth.validatePassword(password)) {
       throw new UnauthorizedException('잘못된 비밀번호입니다.');
     }
@@ -76,7 +77,7 @@ export class AuthService {
   ): Promise<AuthDocument> {
     return await this.authModel.create({
       providerId: String(user._id),
-      password: hashSync(password, 12),
+      password: password,
       user: user._id,
     });
   }

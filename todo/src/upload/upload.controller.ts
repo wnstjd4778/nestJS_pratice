@@ -12,7 +12,7 @@ import { User } from '../decorator/user.decorater';
 import { UploadService } from './upload.service';
 import { FileDocument } from './schema/file.schema';
 import { IUserProfile } from '../types/user';
-import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('upload')
