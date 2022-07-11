@@ -1,3 +1,3 @@
-export enum ErrorCode {
-    TOKEN_EXPIRED = 'TOKEN_EXPIRED',
+export enum ErrorCodes {
+  ACCESS_TOKEN_EXPIRED = 'TOKEN_EXPIRED',
 }

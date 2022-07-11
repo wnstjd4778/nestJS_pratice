@@ -12,11 +12,14 @@ import { APP_GUARD } from '@nestjs/core';
 import { RoleGuard } from './guards/role.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import {LocalStrategy} from "./strategies/local-strategy";
-import {JwtStrategy} from "./strategies/jwt-strategy";
+import { LocalStrategy } from './strategies/local-strategy';
+import { JwtStrategy } from './strategies/jwt-strategy';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CreateAuthCommandHandler } from './commands/create-auth.command.handler';
 
 @Module({
   imports: [
+    CqrsModule,
     MongooseModule.forFeature([
       { name: RefreshToken.name, schema: RefreshTokenSchema },
       { name: AuthModel.name, schema: AuthSchema },
@@ -40,6 +43,7 @@ import {JwtStrategy} from "./strategies/jwt-strategy";
     },
     LocalStrategy,
     JwtStrategy,
+    CreateAuthCommandHandler,
   ],
   exports: [AuthService, AuthGuard],
 })

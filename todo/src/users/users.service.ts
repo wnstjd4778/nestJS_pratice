@@ -11,12 +11,16 @@ import { UserDocument, UserModel } from './schema/user.schema';
 import { JoinUserDto } from './dto/join-user.dto';
 import { IAuthTokens } from '../types/auth-tokens';
 import { AuthService } from '../auth/auth.service';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateUserCommand } from './commands/create-user.command';
+import { CreateAuthCommand } from '../auth/commands/create-auth.command';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
     private readonly authService: AuthService,
+    private commandBus: CommandBus,
   ) {}
 
   // async login(dto: LoginUserDto): Promise<IAuthTokens> {
@@ -44,14 +48,17 @@ export class UsersService {
 
   async join(dto: JoinUserDto): Promise<boolean> {
     const { email, name, phone, password } = dto;
-    const exUser = await this.userModel.findOne({ email });
-    if (exUser) {
-      throw new BadRequestException('이미 등록된 이메일입니다.');
-    }
-    const user = await this.userModel.create({ email, name, phone });
-    const auth = await this.authService.createAuthentication(user, password);
-    user.auth = auth._id;
-    await user.save();
+    await this.commandBus.execute(
+      new CreateUserCommand(email, name, phone, password),
+    );
+    // const exUser = await this.userModel.findOne({ email });
+    // if (exUser) {
+    //   throw new BadRequestException('이미 등록된 이메일입니다.');
+    // }
+    // const user = await this.userModel.create({ email, name, phone });
+    // const auth = await this.authService.createAuthentication(user, password);
+    // user.auth = auth._id;
+    // await user.save();
 
     return true;
   }

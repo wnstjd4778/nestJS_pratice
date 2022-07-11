@@ -21,12 +21,10 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
 import { Connection } from 'mongoose';
 import adminConfig from './config/admin.config';
 import { hashSync } from 'bcrypt';
-import { utilities as nestWinstonUtilities, WinstonModule } from 'nest-winston';
 import { LoggingModule } from './logging/logging.module';
 import { LoggingTestModule } from './logging-test/logging-test.module';
 import { UploadModule } from './upload/upload.module';
 import { BatchModule } from './batch/batch.module';
-import * as winston from 'winston';
 import multerConfig from './config/multer.config';
 
 @Module({
