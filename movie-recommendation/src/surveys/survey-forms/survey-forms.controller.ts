@@ -75,7 +75,5 @@ export class SurveyFormsController {
     return this.surveyFormsService.deleteSurveyForm(user, id);
   }
 
-  @UseGuards(AuthGuard)
-  @Post(':surveyFormId/grade')
 
 }

@@ -15,6 +15,8 @@ import {
   SurveyFormModel,
 } from '../schemas/survey-form.schema';
 import { UsersService } from '../../users/users.service';
+import { createHttpException } from '../../errors/create-error';
+import { ErrorCodes } from '../../errors/error-definition';
 
 @Injectable()
 export class SurveyResultsService {
@@ -28,7 +30,9 @@ export class SurveyResultsService {
   async createSurveyResult(id: string, dto: CreateSurveyResultDto) {
     const surveyForm = await this.surveyFormModel.findById(id);
     if (!surveyForm) {
-      throw new NotFoundException('설문조사를 찾을 수 없습니다.');
+      throw createHttpException(NotFoundException, {
+        code: ErrorCodes.NOT_FOUND_SURVEY_FORM,
+      });
     }
     if (surveyForm.surveyQuestions.length !== dto.answers.length) {
       throw new BadRequestException('모든 질문에 응답해주세요');

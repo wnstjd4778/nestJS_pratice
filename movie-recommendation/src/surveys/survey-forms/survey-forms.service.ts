@@ -19,6 +19,8 @@ import { IAccessTokenPayload } from '../../types/auth-tokens';
 import { CreateSurveyFormDto } from './dto/create-survey-form.dto';
 import { UsersService } from '../../users/users.service';
 import { UploadsService } from '../../uploads/uploads.service';
+import { createHttpException } from '../../errors/create-error';
+import { ErrorCodes } from '../../errors/error-definition';
 
 @Injectable()
 export class SurveyFormsService {
@@ -73,7 +75,9 @@ export class SurveyFormsService {
   ): Promise<SurveyFormDocument> {
     const surveyForm = await this.surveyFormModel.findById(id);
     if (!surveyForm) {
-      throw new NotFoundException('해당 설문조사를 찾을 수 없습니다.');
+      throw createHttpException(NotFoundException, {
+        code: ErrorCodes.NOT_FOUND_SURVEY_FORM,
+      });
     }
     if (String(surveyForm.writer) !== dto.writer) {
       throw new UnauthorizedException('해당 설문조사에 접근할 수 없습니다.');
@@ -107,6 +111,11 @@ export class SurveyFormsService {
     id: string,
   ): Promise<SurveyFormDocument> {
     const surveyForm = await this.surveyFormModel.findById(id);
+    if(!surveyForm) {
+      throw createHttpException(NotFoundException, {
+        code: ErrorCodes.NOT_FOUND_SURVEY_FORM,
+      });
+    }
     if (String(surveyForm.writer) !== user._id) {
       throw new UnauthorizedException('해당 설문조사에 접근할 수 없습니다.');
     }

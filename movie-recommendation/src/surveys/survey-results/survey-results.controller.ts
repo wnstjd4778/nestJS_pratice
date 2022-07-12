@@ -5,6 +5,8 @@ import { AuthGuard } from '../../auth/guard/auth.guard';
 import { User } from '../../decorators/user.decorator';
 import { IAccessTokenPayload } from '../../types/auth-tokens';
 import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
+import {IPaging} from "../../types/paging";
+import {Paging} from "../../decorators/paging.decorator";
 
 @ApiBearerAuth()
 @ApiTags('survey-results')
@@ -17,7 +19,7 @@ export class SurveyResultsController {
   createSurveyResult(
     @User() user: IAccessTokenPayload,
     @Param('id') id: string,
-    @Body() dto: CreateSurveyResultDto,
+    @Body() dto: CreateSurveyResultDto
   ) {
     dto.user = user._id;
     return this.surveyResultsService.createSurveyResult(id, dto);

@@ -15,6 +15,8 @@ import {
   SurveyFormDocument,
   SurveyFormModel,
 } from '../schemas/survey-form.schema';
+import {createHttpException} from "../../errors/create-error";
+import {ErrorCodes} from "../../errors/error-definition";
 
 @Injectable()
 export class SurveyQuestionsService {
@@ -43,7 +45,9 @@ export class SurveyQuestionsService {
   ): Promise<SurveyQuestionDocument> {
     const surveyQuestion = await this.surveyQuestionModel.findById(id);
     if (!surveyQuestion) {
-      throw new NotFoundException('해당 질문을 찾을 수 없습니다.');
+      throw createHttpException(NotFoundException, {
+        code: ErrorCodes.NOT_FOUND_SURVEY_QUESTION,
+      });
     }
     const surveyForm = await this.surveyFormModel.findById(
       surveyQuestion.surveyForm,
@@ -67,7 +71,9 @@ export class SurveyQuestionsService {
   ): Promise<SurveyQuestionDocument> {
     const surveyQuestion = await this.surveyQuestionModel.findById(id);
     if (!surveyQuestion) {
-      throw new NotFoundException('해당 질문을 찾을 수 없습니다.');
+      throw createHttpException(NotFoundException, {
+        code: ErrorCodes.NOT_FOUND_SURVEY_QUESTION,
+      });
     }
     const surveyForm = await this.surveyFormModel.findById(
       surveyQuestion.surveyForm,
